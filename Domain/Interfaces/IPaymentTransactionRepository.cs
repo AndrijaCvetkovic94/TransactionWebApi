@@ -2,7 +2,7 @@ using Domain.Entities;
 
 namespace Domain.Interfaces;
 
-public interface ITransactionRepository
+public interface IPaymentTransactionRepository
 {
     Task AddTransactionAsync(PaymentTransaction transaction);
 }

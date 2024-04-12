@@ -7,11 +7,11 @@ namespace Application.Services;
 
 public class PaymentTransactionService : IPaymentTransactionSerivce
 {
-    private readonly ITransactionRepository _transactionRepository;
+    private readonly IPaymentTransactionRepository _transactionRepository;
     private readonly IUserRepository _userRepository;
     private readonly ICurrencyRepository _currencyRepository;
 
-    public PaymentTransactionService(ITransactionRepository transactionRepository, IUserRepository userRepository, ICurrencyRepository currencyRepository)
+    public PaymentTransactionService(IPaymentTransactionRepository transactionRepository, IUserRepository userRepository, ICurrencyRepository currencyRepository)
     {
         _transactionRepository = transactionRepository;
         _userRepository = userRepository;

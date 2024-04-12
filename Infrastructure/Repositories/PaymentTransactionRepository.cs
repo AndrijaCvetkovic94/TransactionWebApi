@@ -4,7 +4,7 @@ using Domain.Interfaces;
 
 namespace Infrastructure.Repositories;
 
-public class PaymentTransactionRepository : ITransactionRepository
+public class PaymentTransactionRepository : IPaymentTransactionRepository
 {
     private readonly AppDbContext _context;
     
