@@ -1,6 +1,7 @@
 using Application.Interfaces;
 using Application.Services;
 using Infrastucture.ApplicationServices;
+using WebApi.Middlewares.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<HashValidationMiddleware>(builder.Configuration);
 
 app.UseHttpsRedirection();
 
