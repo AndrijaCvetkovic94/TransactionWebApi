@@ -4,16 +4,14 @@ using Infrastucture.ApplicationServices;
 using WebApi.Middlewares.Security;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddMediatR(o => o.RegisterServicesFromAssemblies(typeof(Application.AssemblyReference).Assembly));
 builder.Services.AddApplicationServices(builder.Configuration.GetConnectionString("DefaultConnection"));
-builder.Services.AddScoped<IPaymentTransactionSerivce, PaymentTransactionService>();
+builder.Services.AddScoped<IPaymentTransactionServiceValidation, PaymentTransactionServiceValidation>();
 
 var app = builder.Build();
 

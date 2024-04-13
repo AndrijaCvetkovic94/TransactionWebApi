@@ -4,5 +4,5 @@ namespace Domain.Interfaces;
 
 public interface ICurrencyRepository
 {
-    Task<Currency> GetCurrencyAsync(string CurrencyCode); 
+    Task<Currency> GetCurrencyAsync(string CurrencyCode, CancellationToken cancellationToken); 
 }

@@ -1,6 +1,7 @@
 using Infrastructure.Data;
 using Domain.Entities;
 using Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
@@ -13,8 +14,8 @@ public class CurrencyRepository : ICurrencyRepository
         _context = context;
     }
 
-    public async Task<Currency> GetCurrencyAsync(string CurrencyCode)
+    public async Task<Currency> GetCurrencyAsync(string currencyCode, CancellationToken cancellationToken)
     {
-        return await _context.Currencies.FindAsync(CurrencyCode);
+        return await _context.Currencies.FirstOrDefaultAsync(c => c.Code == currencyCode, cancellationToken);
     }
 }

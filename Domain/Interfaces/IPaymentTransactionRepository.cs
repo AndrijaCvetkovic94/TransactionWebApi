@@ -4,5 +4,5 @@ namespace Domain.Interfaces;
 
 public interface IPaymentTransactionRepository
 {
-    Task AddTransactionAsync(PaymentTransaction transaction);
+    Task AddTransactionAsync(PaymentTransaction transaction, CancellationToken cancellationToken);
 }

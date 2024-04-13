@@ -1,6 +1,7 @@
 using Infrastructure.Data;
 using Domain.Entities;
 using Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
@@ -13,8 +14,8 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    public async Task<User> GetUserById(int id)
+    public async Task<User> GetUserById(int id, CancellationToken cancellationToken)
     {
-        return await _context.Users.FindAsync(id);
+        return await _context.Users.FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
     }
 }
