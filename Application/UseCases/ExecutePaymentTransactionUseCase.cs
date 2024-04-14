@@ -71,6 +71,9 @@ namespace Application.UseCases
 
         private async Task<PaymentTransaction> CreateTransacrion(User user, Currency currency, decimal amount, CancellationToken cancellationToken)
         {
+            
+            AddAmountOfMoneyToUsersBalance(user,amount);
+
             var transaction = new PaymentTransaction
             {
                 Id = Guid.NewGuid(),
@@ -100,6 +103,11 @@ namespace Application.UseCases
                 await _unitOfWork.RollbackTransactionAsync(cancellationToken);
                 throw new Exception("Couldnt add new payment transaction to db ", ex);
             }
+        }
+
+        private void AddAmountOfMoneyToUsersBalance(User user,decimal amount)
+        {
+            user.Balance = user.Balance + amount;
         }
     }
 
