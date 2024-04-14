@@ -1,17 +1,9 @@
-﻿using Application.DTOs;
-using Application.Interfaces;
-using Application.Services;
+﻿using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Transactions;
 
 namespace Application.UseCases
 {
@@ -23,18 +15,21 @@ namespace Application.UseCases
         private readonly IUserRepository _userRepository;
         private readonly ICurrencyRepository _currencyRepository;
         private readonly IPaymentTransactionRepository _paymentTransactionRepository;
+        private readonly ILogger<ExecutePaymentTransactionUseCase> _iLogger;
 
         public ExecutePaymentTransactionUseCase(IPaymentTransactionServiceValidation validationService, 
             IUserRepository userRepository, 
             ICurrencyRepository currencyRepository,
             IPaymentTransactionRepository paymentTransactionRepository,
-            IUnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork,
+            ILogger<ExecutePaymentTransactionUseCase> iLogger)
         {
             _validationService = validationService;
             _userRepository = userRepository;
             _currencyRepository = currencyRepository;
             _paymentTransactionRepository = paymentTransactionRepository;
             _unitOfWork = unitOfWork;
+            _iLogger = iLogger;
         }
 
         public async Task<ExecutePaymentTransactionResponse> Handle(ExecutePaymentTransactionRequest request, CancellationToken cancellationToken)

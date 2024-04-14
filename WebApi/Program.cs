@@ -1,19 +1,20 @@
 using Application.Interfaces;
 using Application.Services;
 using Infrastucture.ApplicationServices;
-using WebApi.Middlewares.Security;
 using Serilog;
 using WebApi.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using WebApi.Authorization.ResultHandler;
 using Domain.Interfaces;
 using Infrastructure.Data;
+using Application.Behaviours;
 
 var builder = WebApplication.CreateBuilder(args);
 
-Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)
-    .CreateLogger();
+builder.Host.UseSerilog((hostingContext, loggerConfiguration) => 
+    loggerConfiguration
+        .ReadFrom.Configuration(hostingContext.Configuration)
+        .Enrich.FromLogContext());
 
 builder.Services.AddApplicationServices(builder.Configuration.GetConnectionString("DefaultConnection"));
 builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
@@ -36,7 +37,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddMediatR(o => o.RegisterServicesFromAssemblies(typeof(Application.AssemblyReference).Assembly));
+builder.Services.AddMediatR(o => o.RegisterServicesFromAssemblies(typeof(Application.AssemblyReference).Assembly).AddOpenBehavior(typeof(LoggingBehavior<,>)));
 
 var app = builder.Build();
 
