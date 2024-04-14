@@ -3,6 +3,9 @@ using Application.Services;
 using Infrastucture.ApplicationServices;
 using WebApi.Middlewares.Security;
 using Serilog;
+using WebApi.Authorization;
+using Microsoft.AspNetCore.Authorization;
+using WebApi.Authorization.ResultHandler;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +13,19 @@ Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .CreateLogger();
 
+builder.Services.AddAuthorization(options =>
+    {
+        options.AddPolicy("ValidHash", policy =>
+            policy.Requirements.Add(new CheckIfHashValidRequirment()));
+    });
+
+
+builder.Services.AddSingleton<IAuthorizationHandler, CheckIfHashValidHandler>();
+
+builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, CustomAuthorizationResultHandler>();
+
+builder.Services.AddScoped<IPaymentTransactionServiceValidation, PaymentTransactionServiceValidation>();
+    
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -17,7 +33,6 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddMediatR(o => o.RegisterServicesFromAssemblies(typeof(Application.AssemblyReference).Assembly));
 builder.Services.AddApplicationServices(builder.Configuration.GetConnectionString("DefaultConnection"));
-builder.Services.AddScoped<IPaymentTransactionServiceValidation, PaymentTransactionServiceValidation>();
 
 var app = builder.Build();
 
@@ -28,7 +43,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseMiddleware<HashValidationMiddleware>(builder.Configuration);
+//This was first solution for authorization, using middleware to check if hash is valid
+//app.UseMiddleware<HashValidationMiddleware>(builder.Configuration);
 
 app.UseHttpsRedirection();
 

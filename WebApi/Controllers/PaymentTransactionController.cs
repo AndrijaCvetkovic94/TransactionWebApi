@@ -2,6 +2,7 @@ using Application.DTOs;
 using Application.Interfaces;
 using Application.UseCases;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 
@@ -19,6 +20,7 @@ public class PaymentTransactionController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Policy = "ValidHash")]
     public async Task<IActionResult> ExectureTransaction([FromBody] PaymentTransactionRequestDTO transactionDTO, CancellationToken cancellationToken)
     {
         Log.Information($"Payment transaction request: Recived request to transfer {transactionDTO.Amount} of {transactionDTO.Currency.ToString()} to players , with Id {transactionDTO.UserId}, account with id {transactionDTO.TransactionId}");
@@ -52,5 +54,4 @@ public class PaymentTransactionController : ControllerBase
         }
 
     }
-    
 }
