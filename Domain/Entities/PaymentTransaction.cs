@@ -22,7 +22,8 @@ public class PaymentTransaction
     public Currency TransactionCurrency { get; set;}
 
     [Required]
-    public int Amount { get; set;}
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal Amount { get; set;}
 
     [Required]
     [MaxLength(256)]

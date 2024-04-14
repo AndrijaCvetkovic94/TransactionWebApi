@@ -23,7 +23,7 @@ public class PaymentTransactionController : ControllerBase
     [Authorize(Policy = "ValidHash")]
     public async Task<IActionResult> ExectureTransaction([FromBody] PaymentTransactionRequestDTO transactionDTO, CancellationToken cancellationToken)
     {
-        Log.Information($"Payment transaction request: Recived request to transfer {transactionDTO.Amount} of {transactionDTO.Currency.ToString()} to players , with Id {transactionDTO.UserId}, account with id {transactionDTO.TransactionId}");
+        //Log.Information($"Payment transaction request: Recived request to transfer {transactionDTO.Amount} of {transactionDTO.Currency.ToString()} to players , with Id {transactionDTO.UserId}, account with id {transactionDTO.TransactionId}");
 
         try
         {
@@ -37,7 +37,7 @@ public class PaymentTransactionController : ControllerBase
 
             var result = await _mediatR.Send(request, cancellationToken);
             
-            Log.Information($"Payment transaction response: Transaction executed with status: {result.Status} with Id: {result.TransactionId} with Description message: {result.Description}");
+            //Log.Information($"Payment transaction response: Transaction executed with status: {result.Status} with Id: {result.TransactionId} with Description message: {result.Description}");
 
             if (result.TransactionId.HasValue)
             {
@@ -54,4 +54,11 @@ public class PaymentTransactionController : ControllerBase
         }
 
     }
+
+    [HttpGet]
+    public IActionResult GetResponse()
+    {
+        return Ok("A");
+    }
+    
 }

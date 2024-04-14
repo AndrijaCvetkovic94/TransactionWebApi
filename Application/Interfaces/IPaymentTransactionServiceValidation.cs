@@ -5,5 +5,5 @@ namespace Application.Interfaces;
 
 public interface IPaymentTransactionServiceValidation
 {
-    bool ValidateRequest(User user, Currency currency, int amount, out PaymentTransactionResponseDTO response);
+    bool ValidateRequest(User user, Currency currency, decimal amount, out PaymentTransactionResponseDTO response);
 }

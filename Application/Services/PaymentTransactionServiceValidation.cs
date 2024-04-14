@@ -16,7 +16,7 @@ public class PaymentTransactionServiceValidation : IPaymentTransactionServiceVal
         _currencyRepository = currencyRepository;
     }
 
-    public bool ValidateRequest(User user, Currency currency, int amount, out PaymentTransactionResponseDTO response)
+    public bool ValidateRequest(User user, Currency currency, decimal amount, out PaymentTransactionResponseDTO response)
     {
         if (user == null)
         {

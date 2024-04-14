@@ -69,7 +69,7 @@ namespace Application.UseCases
             }
         }
 
-        private async Task<PaymentTransaction> CreateTransacrion(User user, Currency currency, int amount, CancellationToken cancellationToken)
+        private async Task<PaymentTransaction> CreateTransacrion(User user, Currency currency, decimal amount, CancellationToken cancellationToken)
         {
             var transaction = new PaymentTransaction
             {
@@ -108,7 +108,7 @@ namespace Application.UseCases
         public Guid TransactionId { get; init; }
         public int UserId { get; init; }
         public string Currency { get; init; }
-        public int Amount { get; init; }
+        public decimal Amount { get; init; }
     }
 
     public class ExecutePaymentTransactionResponse

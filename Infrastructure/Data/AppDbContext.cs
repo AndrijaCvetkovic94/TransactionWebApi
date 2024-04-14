@@ -21,18 +21,22 @@ public class AppDbContext : DbContext
 
         modelBuilder.Entity<PaymentTransaction>()
             .HasOne(p => p.TransactionUser)
-            .WithMany()
+            .WithMany(u => u.Transactions)  // Link to the navigation property
             .HasForeignKey(p => p.TransactionUserId)
             .IsRequired();
-        
+
         modelBuilder.Entity<PaymentTransaction>()
             .HasOne(t => t.TransactionCurrency)
-            .WithMany()
+            .WithMany()  // Update this if Currency has a collection of PaymentTransactions
             .HasForeignKey(t => t.TransactionCurrencyCode)
             .IsRequired();
-        
+
         modelBuilder.Entity<Currency>()
             .HasIndex(c => c.Code)
+            .IsUnique();
+        
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.AccountNumber)
             .IsUnique();
     }
 }
