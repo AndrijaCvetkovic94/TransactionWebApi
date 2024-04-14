@@ -6,12 +6,17 @@ using Serilog;
 using WebApi.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using WebApi.Authorization.ResultHandler;
+using Domain.Interfaces;
+using Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .CreateLogger();
+
+builder.Services.AddApplicationServices(builder.Configuration.GetConnectionString("DefaultConnection"));
+builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
 
 builder.Services.AddAuthorization(options =>
     {
@@ -32,7 +37,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddMediatR(o => o.RegisterServicesFromAssemblies(typeof(Application.AssemblyReference).Assembly));
-builder.Services.AddApplicationServices(builder.Configuration.GetConnectionString("DefaultConnection"));
 
 var app = builder.Build();
 

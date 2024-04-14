@@ -16,6 +16,6 @@ public class PaymentTransactionRepository : IPaymentTransactionRepository
     public async Task AddTransactionAsync(PaymentTransaction transaction,CancellationToken cancellationToken)
     {
         await _context.Transactions.AddAsync(transaction,cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
+        //await _context.SaveChangesAsync(cancellationToken);
     }
 }

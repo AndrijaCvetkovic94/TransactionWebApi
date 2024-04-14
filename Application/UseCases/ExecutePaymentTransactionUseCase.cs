@@ -5,6 +5,7 @@ using Domain.Entities;
 using Domain.Enums;
 using Domain.Interfaces;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace Application.UseCases
             IRequestHandler<ExecutePaymentTransactionRequest, ExecutePaymentTransactionResponse>
     {
         private readonly IPaymentTransactionServiceValidation _validationService;
-
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IUserRepository _userRepository;
         private readonly ICurrencyRepository _currencyRepository;
         private readonly IPaymentTransactionRepository _paymentTransactionRepository;
@@ -26,12 +27,14 @@ namespace Application.UseCases
         public ExecutePaymentTransactionUseCase(IPaymentTransactionServiceValidation validationService, 
             IUserRepository userRepository, 
             ICurrencyRepository currencyRepository,
-            IPaymentTransactionRepository paymentTransactionRepository)
+            IPaymentTransactionRepository paymentTransactionRepository,
+            IUnitOfWork unitOfWork)
         {
             _validationService = validationService;
             _userRepository = userRepository;
             _currencyRepository = currencyRepository;
             _paymentTransactionRepository = paymentTransactionRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<ExecutePaymentTransactionResponse> Handle(ExecutePaymentTransactionRequest request, CancellationToken cancellationToken)
@@ -50,15 +53,25 @@ namespace Application.UseCases
                     TransactionId = result.TransactionId
                 };
             }
-
-            var transaction = await CreateTransacrion(user, currency, request.Amount, cancellationToken);
-
-            return new ExecutePaymentTransactionResponse
+            try
             {
-                TransactionId = transaction.Id,
-                Status = (int)StatusOfTransaction.Success,
-                Description = $"Tranaction executed succesfully, {transaction.Amount} of {transaction.TransactionCurrency} are transfered to Player {user.Name} {user.LastName} with Id {user.Id}"
-            };
+                var transaction = await CreateTransacrion(user, currency, request.Amount, cancellationToken);
+
+                return new ExecutePaymentTransactionResponse
+                {
+                    TransactionId = transaction.Id,
+                    Status = (int)StatusOfTransaction.Success,
+                    Description = $"Tranaction executed succesfully, {transaction.Amount} of {transaction.TransactionCurrency} are transfered to Player {user.Name} {user.LastName} with Id {user.Id}"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ExecutePaymentTransactionResponse
+                {
+                    Status = (int)StatusOfTransaction.InternalFailure,
+                    Description = "Transaction failed due to an internal error."
+                };
+            }
         }
 
         private async Task<PaymentTransaction> CreateTransacrion(User user, Currency currency, int amount, CancellationToken cancellationToken)
@@ -72,12 +85,29 @@ namespace Application.UseCases
                 TransactionUser = user,
                 Description = $"{amount} is transfered to players bank account"
             };
+            
+            try
+            {
 
-            await _paymentTransactionRepository.AddTransactionAsync(transaction, cancellationToken);
+                await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
-            return transaction;
+                await _paymentTransactionRepository.AddTransactionAsync(transaction, cancellationToken);
+                
+                await _unitOfWork.CommitAsync(cancellationToken);
+                
+                await _unitOfWork.CommitTransactionAsync(cancellationToken);
+
+
+                return transaction;
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+                throw new Exception("Couldnt add new payment transaction to db ", ex);
+            }
         }
     }
+
     public class ExecutePaymentTransactionRequest : IRequest<ExecutePaymentTransactionResponse>
     {
         public Guid TransactionId { get; init; }

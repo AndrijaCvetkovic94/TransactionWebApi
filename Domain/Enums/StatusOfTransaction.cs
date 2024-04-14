@@ -5,5 +5,6 @@ public enum StatusOfTransaction
     Success,
     UserNotFound,
     CurrencyNotFound,
-    InvalidAmount
+    InvalidAmount,
+    InternalFailure
 }
