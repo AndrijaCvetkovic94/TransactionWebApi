@@ -21,12 +21,12 @@ namespace Application.Behaviours
         public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {
             var reqBody = JsonSerializer.Serialize(request);
-            _logger.LogInformation($"Handling {typeof(TRequest).Name} {reqBody}");
+            _logger.LogInformation($"Handling Request {reqBody}");
 
             var response = await next();
             var resBody = JsonSerializer.Serialize(response);
 
-            _logger.LogInformation($"Handled {typeof(TResponse).Name} {resBody}");
+            _logger.LogInformation($"Response {resBody}");
 
             return response;
         }
