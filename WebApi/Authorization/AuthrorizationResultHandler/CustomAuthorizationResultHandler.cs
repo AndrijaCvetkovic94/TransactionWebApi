@@ -7,6 +7,7 @@ namespace WebApi.Authorization.ResultHandler
     {
         public async Task HandleAsync(RequestDelegate next, HttpContext context, AuthorizationPolicy policy, PolicyAuthorizationResult authorizeResult)
         {
+            // Check if authorizeResult is Challenged (hash from header was not valid) and returning status code 401 with description
             if (authorizeResult.Challenged)
             {
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;

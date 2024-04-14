@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.UseCases
 {
+    // Use case for executing payment transactions. It implements MediatR's IRequestHandler for handling requests and generating responses.
     internal class ExecutePaymentTransactionUseCase : 
             IRequestHandler<ExecutePaymentTransactionRequest, ExecutePaymentTransactionResponse>
     {
@@ -32,13 +33,17 @@ namespace Application.UseCases
             _iLogger = iLogger;
         }
 
+        // Handles the incoming request, checks validation, and processes the payment transaction.
         public async Task<ExecutePaymentTransactionResponse> Handle(ExecutePaymentTransactionRequest request, CancellationToken cancellationToken)
         {
             var user = await _userRepository.GetUserById(request.UserId, cancellationToken);
             var currency = await _currencyRepository.GetCurrencyAsync(request.Currency, cancellationToken);
 
+            //here we are using PaymentTransactionServiceValidation to validate request
             var isValid = _validationService.ValidateRequest(user, currency, request.Amount, out var result);
 
+            //If request is invalid it will return ExecutePaymentTransactionResponse with null for TransactionId, status diffrent then 0
+            //which indicates that transaction was not executed successfully and Description message
             if(!isValid)
             {
                 return new ExecutePaymentTransactionResponse
@@ -48,6 +53,7 @@ namespace Application.UseCases
                     TransactionId = result.TransactionId
                 };
             }
+
             try
             {
                 var transaction = await CreateTransacrion(user, currency, request.Amount, cancellationToken);
@@ -56,7 +62,7 @@ namespace Application.UseCases
                 {
                     TransactionId = transaction.Id,
                     Status = (int)StatusOfTransaction.Success,
-                    Description = $"Tranaction executed succesfully, {transaction.Amount} of {transaction.TransactionCurrency} are transfered to Player {user.Name} {user.LastName} with Id {user.Id}"
+                    Description = $"Tranaction executed succesfully, {transaction.Amount} of {transaction.TransactionCurrency.ToString()} are transfered to Player {user.Name} {user.LastName} with Id {user.Id}"
                 };
             }
             catch (Exception ex)
@@ -69,6 +75,7 @@ namespace Application.UseCases
             }
         }
 
+        //Method to create and save a transaction to the database.
         private async Task<PaymentTransaction> CreateTransacrion(User user, Currency currency, decimal amount, CancellationToken cancellationToken)
         {
             
@@ -86,11 +93,13 @@ namespace Application.UseCases
             
             try
             {
-
+                // Begin a database transaction.
                 await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
+                // Add the new transaction to the database.
                 await _paymentTransactionRepository.AddTransactionAsync(transaction, cancellationToken);
                 
+                // Commit the database transaction.
                 await _unitOfWork.CommitAsync(cancellationToken);
                 
                 await _unitOfWork.CommitTransactionAsync(cancellationToken);
@@ -100,17 +109,20 @@ namespace Application.UseCases
             }
             catch (Exception ex)
             {
+                // Roll back the transaction in case of an error and rethrow the exception.
                 await _unitOfWork.RollbackTransactionAsync(cancellationToken);
                 throw new Exception("Couldnt add new payment transaction to db ", ex);
             }
         }
 
+        // Helper method to update the user's balance.
         private void AddAmountOfMoneyToUsersBalance(User user,decimal amount)
         {
             user.Balance = user.Balance + amount;
         }
     }
 
+    // Data Transfer Object for initiating a payment transaction request.
     public class ExecutePaymentTransactionRequest : IRequest<ExecutePaymentTransactionResponse>
     {
         public Guid TransactionId { get; init; }
@@ -119,6 +131,7 @@ namespace Application.UseCases
         public decimal Amount { get; init; }
     }
 
+    // Data Transfer Object for the response of a payment transaction execution.
     public class ExecutePaymentTransactionResponse
     {
         public Guid? TransactionId { get; init; }

@@ -6,59 +6,52 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 
-namespace WebApi.Controllers;
-
-[ApiController]
-[Route("[controller]")]
-public class PaymentTransactionController : ControllerBase
+namespace WebApi.Controllers
 {
-    private readonly IMediator _mediatR;
-
-    public PaymentTransactionController(IMediator mediator)
+    [ApiController]
+    [Route("[controller]")]
+    public class PaymentTransactionController : ControllerBase
     {
-        _mediatR = mediator;
-    }
+        private readonly IMediator _mediatR;
 
-    [HttpPost]
-    [Authorize(Policy = "ValidHash")]
-    public async Task<IActionResult> ExectureTransaction([FromBody] PaymentTransactionRequestDTO transactionDTO, CancellationToken cancellationToken)
-    {
-        //Log.Information($"Payment transaction request: Recived request to transfer {transactionDTO.Amount} of {transactionDTO.Currency.ToString()} to players , with Id {transactionDTO.UserId}, account with id {transactionDTO.TransactionId}");
-
-        try
+        public PaymentTransactionController(IMediator mediator)
         {
-            var request = new ExecutePaymentTransactionRequest
-            {
-                TransactionId = transactionDTO.TransactionId,
-                Amount = transactionDTO.Amount,
-                Currency = transactionDTO.Currency,
-                UserId = transactionDTO.UserId
-            };
-
-            var result = await _mediatR.Send(request, cancellationToken);
-            
-            //Log.Information($"Payment transaction response: Transaction executed with status: {result.Status} with Id: {result.TransactionId} with Description message: {result.Description}");
-
-            if (result.TransactionId.HasValue)
-            {
-                return Ok(result);
-            }
-            else
-            {
-                return BadRequest(result);
-            }
-        }
-        catch(Exception ex)
-        {
-            return BadRequest(ex.Message);
+            _mediatR = mediator;
         }
 
-    }
+        [HttpPost]
+        [Authorize(Policy = "ValidHash")]
+        public async Task<IActionResult> ExectureTransaction([FromBody] PaymentTransactionRequestDTO transactionDTO, CancellationToken cancellationToken)
+        {
+            try
+            {
+                // Map the PaymentTransactionRequestDTO to the actual ExecutePaymentTransactionRequest object required by MediatR.
+                var request = new ExecutePaymentTransactionRequest
+                {
+                    TransactionId = transactionDTO.TransactionId,
+                    Amount = transactionDTO.Amount,
+                    Currency = transactionDTO.Currency,
+                    UserId = transactionDTO.UserId
+                };
 
-    [HttpGet]
-    public IActionResult GetResponse()
-    {
-        return Ok("A");
+                // Send the request to the MediatR pipeline and wait for the result.
+                var result = await _mediatR.Send(request, cancellationToken);
+                
+                // Return a successful response if a transaction ID was assigned, otherwise return an error.
+                if (result.TransactionId.HasValue)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    return BadRequest(result);
+                }
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
     }
-    
 }

@@ -5,6 +5,7 @@ using Application.DTOs;
 
 namespace WebApi.Middlewares.Security;
 
+//This class was used as first solution for hash validation as Middleware, but later i decided to switch to policy-based authorization
 public class HashValidationMiddleware
 {
     private readonly RequestDelegate _next;

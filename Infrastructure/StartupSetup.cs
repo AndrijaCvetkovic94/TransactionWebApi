@@ -4,20 +4,21 @@ using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Infrastucture.ApplicationServices;
-
-public static class StartupSetup
+namespace Infrastucture.ApplicationServices
 {
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services, string connectionString)
+    public static class StartupSetup
     {
-        // Configure DbContext with SQLite
-        services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlite(connectionString));
+        public static IServiceCollection AddApplicationServices(this IServiceCollection services, string connectionString)
+        {
+            // Configure DbContext with SQLite
+            services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlite(connectionString));
 
-        services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IPaymentTransactionRepository, PaymentTransactionRepository>();
-        services.AddScoped<ICurrencyRepository, CurrencyRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IPaymentTransactionRepository, PaymentTransactionRepository>();
+            services.AddScoped<ICurrencyRepository, CurrencyRepository>();
 
-        return services;
+            return services;
+        }
     }
 }

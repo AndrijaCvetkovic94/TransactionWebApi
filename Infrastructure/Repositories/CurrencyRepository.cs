@@ -3,19 +3,20 @@ using Domain.Entities;
 using Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Repositories;
-
-public class CurrencyRepository : ICurrencyRepository
+namespace Infrastructure.Repositories
 {
-    private readonly AppDbContext _context;
-    
-    public CurrencyRepository(AppDbContext context)
+    public class CurrencyRepository : ICurrencyRepository
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
+        
+        public CurrencyRepository(AppDbContext context)
+        {
+            _context = context;
+        }
 
-    public async Task<Currency> GetCurrencyAsync(string currencyCode, CancellationToken cancellationToken)
-    {
-        return await _context.Currencies.FirstOrDefaultAsync(c => c.Code == currencyCode, cancellationToken);
+        public async Task<Currency> GetCurrencyAsync(string currencyCode, CancellationToken cancellationToken)
+        {
+            return await _context.Currencies.FirstOrDefaultAsync(c => c.Code == currencyCode, cancellationToken);
+        }
     }
 }

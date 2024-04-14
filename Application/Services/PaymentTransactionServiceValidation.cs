@@ -3,41 +3,45 @@ using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
 
-namespace Application.Services;
-
-public class PaymentTransactionServiceValidation : IPaymentTransactionServiceValidation
+namespace Application.Services
 {
-    private readonly IUserRepository _userRepository;
-    private readonly ICurrencyRepository _currencyRepository;
 
-    public PaymentTransactionServiceValidation(IUserRepository userRepository, ICurrencyRepository currencyRepository)
+    // This class provides validation for payment transaction requests.
+    public class PaymentTransactionServiceValidation : IPaymentTransactionServiceValidation
     {
-        _userRepository = userRepository;
-        _currencyRepository = currencyRepository;
-    }
+        private readonly IUserRepository _userRepository;
+        private readonly ICurrencyRepository _currencyRepository;
 
-    public bool ValidateRequest(User user, Currency currency, decimal amount, out PaymentTransactionResponseDTO response)
-    {
-        if (user == null)
+        public PaymentTransactionServiceValidation(IUserRepository userRepository, ICurrencyRepository currencyRepository)
         {
-            response = new PaymentTransactionResponseDTO { TransactionId = default, Status = 1, Description = "Non-existing player" };
-            return false;
+            _userRepository = userRepository;
+            _currencyRepository = currencyRepository;
         }
 
-        if (currency == null)
+        // Validates the given payment transaction request and returns a boolean indicating the validity of the request.
+        // It also outputs a PaymentTransactionResponseDTO that includes details on the transaction status and any error descriptions.
+        public bool ValidateRequest(User user, Currency currency, decimal amount, out PaymentTransactionResponseDTO response)
         {
-            response = new PaymentTransactionResponseDTO { TransactionId = default, Status = 2, Description = "Invalid Currency" };
-            return false;
-        }
+            if (user == null)
+            {
+                response = new PaymentTransactionResponseDTO { TransactionId = default, Status = 1, Description = "Non-existing player" };
+                return false;
+            }
 
-        if (amount <= 0)
-        {
-            response = new PaymentTransactionResponseDTO { TransactionId = default, Status = 3, Description = "Amount of money in transaction is not bigger than zero" };
-            return false;
-        }
+            if (currency == null)
+            {
+                response = new PaymentTransactionResponseDTO { TransactionId = default, Status = 2, Description = "Invalid Currency" };
+                return false;
+            }
 
-        response = new PaymentTransactionResponseDTO();
-        return true;
-        //return await _createAndSavePaymentTransactionService.CreateAndSavePaymentTransaction(amount, currency, user);
+            if (amount <= 0)
+            {
+                response = new PaymentTransactionResponseDTO { TransactionId = default, Status = 3, Description = "Amount of money in transaction is not bigger than zero" };
+                return false;
+            }
+
+            response = new PaymentTransactionResponseDTO();
+            return true;
+        }
     }
 }
