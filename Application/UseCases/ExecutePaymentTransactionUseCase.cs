@@ -81,15 +81,7 @@ namespace Application.UseCases
             
             AddAmountOfMoneyToUsersBalance(user,amount);
 
-            var transaction = new PaymentTransaction
-            {
-                Id = Guid.NewGuid(),
-                Timestamp = DateTime.UtcNow,
-                Amount = amount,
-                TransactionCurrency = currency,
-                TransactionUser = user,
-                Description = $"{amount} is transfered to players bank account"
-            };
+            var transaction = new PaymentTransaction(Guid.NewGuid(), DateTime.UtcNow, amount, currency, user, $"{amount} is transfered to players bank account");
             
             try
             {
