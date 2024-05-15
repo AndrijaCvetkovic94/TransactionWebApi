@@ -79,39 +79,32 @@ namespace Application.UseCases
         private async Task<PaymentTransaction> CreateTransacrion(User user, Currency currency, decimal amount, CancellationToken cancellationToken)
         {
             
-            AddAmountOfMoneyToUsersBalance(user,amount);
-
             var transaction = new PaymentTransaction(Guid.NewGuid(), DateTime.UtcNow, amount, currency, user, $"{amount} is transfered to players bank account");
             
             try
             {
-                // Begin a database transaction.
-                await _unitOfWork.BeginTransactionAsync(cancellationToken);
-
                 // Add the new transaction to the database.
                 await _paymentTransactionRepository.AddTransactionAsync(transaction, cancellationToken);
                 
-                // Commit the database transaction.
-                await _unitOfWork.CommitAsync(cancellationToken);
+                // Add money to users balance
+                user.AddMoneyToUsersAccount(amount);
                 
-                await _unitOfWork.CommitTransactionAsync(cancellationToken);
-
+                // Commit the database transaction.
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
 
                 return transaction;
             }
             catch (Exception ex)
             {
-                // Roll back the transaction in case of an error and rethrow the exception.
-                await _unitOfWork.RollbackTransactionAsync(cancellationToken);
                 throw new Exception("Couldnt add new payment transaction to db ", ex);
             }
         }
 
         // Helper method to update the user's balance.
-        private void AddAmountOfMoneyToUsersBalance(User user,decimal amount)
+        /*private void AddAmountOfMoneyToUsersBalance(User user,decimal amount)
         {
-            user.Balance = user.Balance + amount;
-        }
+            user.AddMoneyToUsersAccount(amount);
+        }*/
     }
 
     // Data Transfer Object for initiating a payment transaction request.
