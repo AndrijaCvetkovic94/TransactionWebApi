@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using Domain.Exceptions;
+
 namespace Domain.Entities;
 
 public class User
@@ -37,10 +39,21 @@ public class User
         Balance += amount;
     }
 
-    public void RemoveMoneyFromUsersAccount(decimal amount)
+    public void WithdrawMoneyFromBalance(decimal amount)
     {
         Balance -= amount;
     }
 
+    internal void ValidateMoneyWithdrawal(decimal amount)
+    {
+        if(amount < 0)
+        {
+            throw new InvalidMoneyAmountException();
+        }
 
+        if(Balance < amount)
+        {
+            throw new InsufficientFundsException();
+        }
+    }
 }

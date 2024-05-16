@@ -1,4 +1,6 @@
 ﻿using Application.Interfaces;
+using Domain.DomainServices;
+using Domain.Exceptions;
 using Domain.Entities;
 using Domain.Interfaces;
 using MediatR;
@@ -13,20 +15,19 @@ namespace Application.UseCases
     internal class ExecuteMoneyWithdrawalFromUsersBalanceUseCase : 
         IRequestHandler<ExecuteRemoveMoneyFromUsersBalanceRequest, ExecuteRemoveMoneyFromUsersBalanceResponse>
     {
-
-        private readonly IMoneyWithdrawalFromUsersBalanceValidation _validationService;
+        private readonly IMoneyWithdrawalFromUsersBalanceService _moneyWithdrawalDomainService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserRepository _userRepository;
         private readonly ICurrencyRepository _currencyRepository;
         private readonly IMoneyWithdrawalFromUsersBalanceRepository _removeMoneyFromUsersBalanceRepository;
 
-        public ExecuteMoneyWithdrawalFromUsersBalanceUseCase(IMoneyWithdrawalFromUsersBalanceValidation validationService, 
+        public ExecuteMoneyWithdrawalFromUsersBalanceUseCase(IMoneyWithdrawalFromUsersBalanceService validationService, 
             IUnitOfWork unitOfWork,
              ICurrencyRepository currencyRepository,
             IUserRepository userRepository,
             IMoneyWithdrawalFromUsersBalanceRepository removeMoneyFromUsersBalanceRepository)
         {
-            _validationService = validationService;
+            _moneyWithdrawalDomainService = validationService;
             _currencyRepository = currencyRepository;
             _unitOfWork = unitOfWork;
             _userRepository = userRepository;
@@ -35,32 +36,29 @@ namespace Application.UseCases
 
         public async Task<ExecuteRemoveMoneyFromUsersBalanceResponse> Handle(ExecuteRemoveMoneyFromUsersBalanceRequest request, CancellationToken cancellationToken)
         {
-            var user = await _userRepository.GetUserById(request.UserId, cancellationToken);
-            var currency = await _currencyRepository.GetCurrencyAsync(request.Currency, cancellationToken);
-
-            var response = _validationService.ValidateRequest(user, request.Amount, currency);
-
-            if(response.Status == 0)
-            {
-            }
-
-            return new ExecuteRemoveMoneyFromUsersBalanceResponse { Status = response.Status, Description = response.Description};
-
-        }
-
-        public async Task<MoneyWithdrawalFromUsersBalance> CreateMoneyWithdrawalFromUsersBalance(User user, Currency currency, decimal amount, CancellationToken cancellationToken)
-        {
-            var moneyWithdrawal = new MoneyWithdrawalFromUsersBalance(Guid.NewGuid(), DateTime.UtcNow, amount, currency, user, $"{amount} is withdrawed from players balance");
-
             try
             {
-                await _removeMoneyFromUsersBalanceRepository.AddMoneyWithdrawalAsync(moneyWithdrawal, cancellationToken);
-                
-                user.RemoveMoneyFromUsersAccount(amount);
+                var user = await _userRepository.GetUserById(request.UserId, cancellationToken);
+                var currency = await _currencyRepository.GetCurrencyAsync(request.Currency, cancellationToken);
+
+                var moneyWithdrawalFromUsersBalance = _moneyWithdrawalDomainService.ExecuteMoneyWithdrawal(request.Amount, currency, user);
+                await SaveNewMoneyWithdrawalFromUsersBalance(moneyWithdrawalFromUsersBalance,cancellationToken);
+
+                return new ExecuteRemoveMoneyFromUsersBalanceResponse { Status = 0, Description = moneyWithdrawalFromUsersBalance.Description};
+            }
+            catch(DomainException ex)
+            {
+                return new ExecuteRemoveMoneyFromUsersBalanceResponse { Status = ex.StatusCode, Description = ex.Message};
+            }
+        }
+
+        public async Task SaveNewMoneyWithdrawalFromUsersBalance(MoneyWithdrawalFromUsersBalance moneyWithdrawalFromUsersBalance,CancellationToken cancellationToken)
+        {
+            try
+            {
+                await _removeMoneyFromUsersBalanceRepository.AddMoneyWithdrawalAsync(moneyWithdrawalFromUsersBalance, cancellationToken);
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-                return moneyWithdrawal;
             }
             catch(Exception ex ) 
             {

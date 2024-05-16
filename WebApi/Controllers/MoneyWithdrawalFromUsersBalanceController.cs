@@ -19,7 +19,6 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        [Authorize(Policy = "ValidHash")]
         public async Task<IActionResult> ExecuteMoneyWithdrawalFromUsersBalance([FromBody]MoneyWithdrawalFromUsersBalanceRequestDTO moneyWithdrawalFromUsersBalanceRequestDTO, 
             CancellationToken cancellationToken)
         {

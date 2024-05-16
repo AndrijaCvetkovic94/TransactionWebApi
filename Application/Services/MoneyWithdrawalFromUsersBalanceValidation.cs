@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Application.Services
 {
-    internal class MoneyWithdrawalFromUsersBalanceValidation : IMoneyWithdrawalFromUsersBalanceValidation
+    public class MoneyWithdrawalFromUsersBalanceValidation : IMoneyWithdrawalFromUsersBalanceValidation
     {
         private readonly IUserRepository _userRepository;
         private readonly ICurrencyRepository _currencyRepository;

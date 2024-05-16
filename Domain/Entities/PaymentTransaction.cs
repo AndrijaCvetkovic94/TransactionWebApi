@@ -29,6 +29,11 @@ public class PaymentTransaction
     [MaxLength(256)]
     public string Description { get; private set;} = string.Empty;
 
+    public PaymentTransaction()
+    {
+
+    }
+
     public PaymentTransaction(Guid id, DateTime timeStamp, decimal amount, Currency transactionCurrency, User transactionUser, string description)
     {
         Id = id;
@@ -38,6 +43,5 @@ public class PaymentTransaction
         TransactionUser = transactionUser;
         Description = description;
     }
-
     
 }

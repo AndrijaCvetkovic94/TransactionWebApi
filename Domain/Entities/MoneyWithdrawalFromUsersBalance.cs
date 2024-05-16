@@ -10,37 +10,42 @@ public class MoneyWithdrawalFromUsersBalance
 
     [Required]
     [ForeignKey("MoneyWithdrawalUser")]
-    public int MoneyWithdrawalUserId { get; private set; }
-    public User MoneyWithdrawalUser { get; private set; }
+    public int MoneyWithdrawalUserId { get; set; }
+    public User MoneyWithdrawalUser { get; set; }
 
     [Required]
-    public DateTime Timestamp { get; private set; }
+    public DateTime Timestamp { get; set; }
 
     [Required]
     [Column(TypeName = "decimal(18,2)")]
-    public decimal Amount { get; private set; }
+    public decimal Amount { get; set; }
 
     [Required]
     [ForeignKey("MoneyWithdrawalCurrency")]
-    public string MoneyWithdrawalCurrencyCode { get; private set; }
-    public Currency MoneyWithdrawalCurrency { get; private set; }
+    public string MoneyWithdrawalCurrencyCode { get; set; }
+    public Currency MoneyWithdrawalCurrency { get; set; }
 
     [Required]
     [MaxLength(256)]
-    public string Description { get; private set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
 
-    public MoneyWithdrawalFromUsersBalance(Guid id, 
-        DateTime timeStamp, 
-        decimal amount, 
-        Currency moneyWithdrawalFromUsersBalanceCurrency, 
-        User moneyWithdrawalFromUsersBalanceUser, 
+    public MoneyWithdrawalFromUsersBalance()
+    {
+
+    }
+
+    public MoneyWithdrawalFromUsersBalance(Guid id,
+        DateTime timeStamp,
+        decimal amount,
+        Currency moneyWithdrawalCurrency,
+        User moneyWithdrawalUser,
         string description)
     {
         Id = id;
         Timestamp = timeStamp;
         Amount = amount;
-        MoneyWithdrawalCurrency = moneyWithdrawalFromUsersBalanceCurrency;
-        MoneyWithdrawalUser = moneyWithdrawalFromUsersBalanceUser;
+        MoneyWithdrawalCurrency = moneyWithdrawalCurrency;
+        MoneyWithdrawalUser = moneyWithdrawalUser;
         Description = description;
     }
 }

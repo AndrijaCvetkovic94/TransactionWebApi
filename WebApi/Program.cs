@@ -8,6 +8,7 @@ using WebApi.Authorization.ResultHandler;
 using Domain.Interfaces;
 using Infrastructure.Data;
 using Application.Behaviours;
+using Domain.DomainServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,7 +32,9 @@ builder.Services.AddSingleton<IAuthorizationHandler, CheckIfHashValidHandler>();
 builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, CustomAuthorizationResultHandler>();
 
 builder.Services.AddScoped<IPaymentTransactionServiceValidation, PaymentTransactionServiceValidation>();
-    
+
+builder.Services.AddScoped<IMoneyWithdrawalFromUsersBalanceService, MoneyWithdrawalFromUsersBalanceService>();
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
