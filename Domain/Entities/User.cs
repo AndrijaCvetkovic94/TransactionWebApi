@@ -19,17 +19,17 @@ public class User
     public string LastName { get; private set; } = string.Empty;
 
     [Required]
-    public string AccountNumber { get; private set;} = string.Empty;
+    public string AccountNumber { get; private set; } = string.Empty;
 
     [Required]
     [MaxLength(256)]
-    public string Adress { get; private set;} = string.Empty;
+    public string Adress { get; private set; } = string.Empty;
     
     [Column(TypeName = "decimal(18,2)")]
     public decimal Balance { get; private set; }
 
     [Required]
-    public List<PaymentTransaction> Transactions { get; private set;} = new List<PaymentTransaction>();
+    public List<PaymentTransaction> Transactions { get; private set; } = new List<PaymentTransaction>();
 
     [Required]
     public List<MoneyWithdrawalFromUsersBalance> MoneyWithdrawals { get; private set; } = new List<MoneyWithdrawalFromUsersBalance>();
