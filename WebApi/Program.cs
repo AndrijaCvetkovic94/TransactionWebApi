@@ -33,7 +33,7 @@ builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, CustomAutho
 
 builder.Services.AddScoped<IPaymentTransactionServiceValidation, PaymentTransactionServiceValidation>();
 
-builder.Services.AddScoped<IMoneyWithdrawalFromUsersBalanceService, MoneyWithdrawalFromUsersBalanceService>();
+builder.Services.AddScoped<IMoneyWithdrawalService, MoneyWithdrawalService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -17,7 +17,7 @@ namespace Infrastucture.ApplicationServices
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IPaymentTransactionRepository, PaymentTransactionRepository>();
             services.AddScoped<ICurrencyRepository, CurrencyRepository>();
-            services.AddScoped<IMoneyWithdrawalFromUsersBalanceRepository, MoneyWithdrawalFromUsersBalanceRepository>();
+            services.AddScoped<IMoneyWithdrawalRepository, MoneyWithdrawalRepository>();
 
             return services;
         }
