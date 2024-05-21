@@ -9,22 +9,22 @@ namespace WebApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class MoneyWithdrawalFromUsersBalanceController : ControllerBase
+    public class MoneyWithdrawalController : ControllerBase
     {
         private readonly IMediator _mediatR;
 
-        public MoneyWithdrawalFromUsersBalanceController(IMediator mediator)
+        public MoneyWithdrawalController(IMediator mediator)
         {
             _mediatR = mediator;
         }
 
         [HttpPost]
-        public async Task<IActionResult> ExecuteMoneyWithdrawalFromUsersBalance([FromBody]MoneyWithdrawalFromUsersBalanceRequestDTO moneyWithdrawalFromUsersBalanceRequestDTO, 
+        public async Task<IActionResult> ExecuteMoneyWithdrawalFromUsersBalance([FromBody]MoneyWithdrawalRequestDTO moneyWithdrawalFromUsersBalanceRequestDTO, 
             CancellationToken cancellationToken)
         {
             try
             {
-                var request = new ExecuteRemoveMoneyFromUsersBalanceRequest {
+                var request = new ExecuteMoneyWithdrawalRequest {
                     Amount = moneyWithdrawalFromUsersBalanceRequestDTO.Amount,
                     Currency = moneyWithdrawalFromUsersBalanceRequestDTO.Currency,
                     UserId = moneyWithdrawalFromUsersBalanceRequestDTO.UserId

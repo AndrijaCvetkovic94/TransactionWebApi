@@ -10,23 +10,23 @@ using System.Threading.Tasks;
 
 namespace Application.Services
 {
-    public class MoneyWithdrawalFromUsersBalanceValidation : IMoneyWithdrawalFromUsersBalanceValidation
+    public class MoneyWithdrawalValidation : IMoneyWithdrawalValidation
     {
         private readonly IUserRepository _userRepository;
         private readonly ICurrencyRepository _currencyRepository;
 
-        public MoneyWithdrawalFromUsersBalanceValidation(IUserRepository userRepository, ICurrencyRepository currencyRepository)
+        public MoneyWithdrawalValidation(IUserRepository userRepository, ICurrencyRepository currencyRepository)
         {
             _userRepository = userRepository;
             _currencyRepository = currencyRepository;
         }
 
-        public MoneyWithdrawalFromUsersBalanceResponseDTO ValidateRequest(User user, decimal amount, Currency currency)
+        public MoneyWithdrawalResponseDTO ValidateRequest(User user, decimal amount, Currency currency)
         {
 
             if (user == null)
             {
-                return new MoneyWithdrawalFromUsersBalanceResponseDTO
+                return new MoneyWithdrawalResponseDTO
                 {
                     Status = 1,
                     Description = "Non-existing player"
@@ -35,7 +35,7 @@ namespace Application.Services
 
             if(amount <= 0) 
             {
-                return new MoneyWithdrawalFromUsersBalanceResponseDTO
+                return new MoneyWithdrawalResponseDTO
                 {
                     Status = 2,
                     Description = "Amount of money in transaction is not bigger than zero"
@@ -44,7 +44,7 @@ namespace Application.Services
 
             if (currency == null)
             {
-                return new MoneyWithdrawalFromUsersBalanceResponseDTO
+                return new MoneyWithdrawalResponseDTO
                 {
                     Status = 3,
                     Description = "Invalid currency"
@@ -53,14 +53,14 @@ namespace Application.Services
 
             if (user.Balance - amount < 0) 
             {
-                return new MoneyWithdrawalFromUsersBalanceResponseDTO
+                return new MoneyWithdrawalResponseDTO
                 {
                     Status = 4,
                     Description = "Amount of money is bigger then amount of money in the users balance"
                 };
             }
 
-            return new MoneyWithdrawalFromUsersBalanceResponseDTO
+            return new MoneyWithdrawalResponseDTO
             {
                 Status = 0,
                 Description = $"{amount} of money removed from users balance"

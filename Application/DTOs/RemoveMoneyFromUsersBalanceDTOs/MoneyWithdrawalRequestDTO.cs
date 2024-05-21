@@ -1,6 +1,6 @@
 ﻿namespace Application.DTOs;
 
-public class MoneyWithdrawalFromUsersBalanceRequestDTO
+public class MoneyWithdrawalRequestDTO
 {
     public int UserId { get; init; }
     public string Currency { get; init; }

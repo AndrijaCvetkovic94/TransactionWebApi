@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities;
 
-public class MoneyWithdrawalFromUsersBalance
+public class MoneyWithdrawal
 {
     [Key]
     public Guid Id { get; set; }
@@ -29,12 +29,12 @@ public class MoneyWithdrawalFromUsersBalance
     [MaxLength(256)]
     public string Description { get; set; } = string.Empty;
 
-    public MoneyWithdrawalFromUsersBalance()
+    public MoneyWithdrawal()
     {
 
     }
 
-    public MoneyWithdrawalFromUsersBalance(Guid id,
+    public MoneyWithdrawal(Guid id,
         DateTime timeStamp,
         decimal amount,
         Currency moneyWithdrawalCurrency,
