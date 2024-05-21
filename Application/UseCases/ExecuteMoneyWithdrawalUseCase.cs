@@ -41,14 +41,23 @@ namespace Application.UseCases
                 var user = await _userRepository.GetUserById(request.UserId, cancellationToken);
                 var currency = await _currencyRepository.GetCurrencyAsync(request.Currency, cancellationToken);
 
-                var moneyWithdrawal = _moneyWithdrawalDomainService.ExecuteMoneyWithdrawal(request.Amount, currency, user);
-                await SaveNewMoneyWithdrawalFromUsersBalance(moneyWithdrawal,cancellationToken);
+                var result = _moneyWithdrawalDomainService.ExecuteMoneyWithdrawal(request.Amount, currency, user);
 
-                return new ExecuteMoneyWithdrawalResponse { Status = 0, Description = moneyWithdrawal.Description};
+                if(result.IsSuccess)
+                {
+                    await SaveNewMoneyWithdrawalFromUsersBalance(result.Value, cancellationToken);
+
+                    return new ExecuteMoneyWithdrawalResponse { Status = 0, Description = result.Value.Description };
+                }
+                else
+                {
+                    return new ExecuteMoneyWithdrawalResponse { Status = result.Error.Code, Description = result.Error.Message };
+                }
+
             }
-            catch(DomainException ex)
+            catch (Exception ex)
             {
-                return new ExecuteMoneyWithdrawalResponse { Status = ex.StatusCode, Description = ex.Message};
+                throw new Exception("Server Internal error. Unable to execute money withrawal " + ex);
             }
         }
 

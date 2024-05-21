@@ -33,16 +33,13 @@ public class User
         Balance -= amount;
     }
 
-    internal void ValidateMoneyWithdrawal(decimal amount)
+    internal bool ValidateMoneyWithdrawal(decimal amount)
     {
-        if(amount < 0)
-        {
-            throw new InvalidMoneyAmountException();
-        }
-
         if(Balance < amount)
         {
-            throw new InsufficientFundsException();
+            return false;
         }
+
+        return true;
     }
 }

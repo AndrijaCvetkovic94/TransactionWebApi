@@ -21,15 +21,23 @@ namespace Domain.DomainServices
         {
             if(user == null)
             {
-                return Result.Failure<MoneyWithdrawal>(new Error("1", "Non exsisting user"));
+                return Result.Failure<MoneyWithdrawal>(new Error(1, "Non exsisting user"));
             }
 
             if(currency == null)
             {
-                throw new InvalidCurrencyException();
+                return Result.Failure<MoneyWithdrawal>(new Error(2, "Invalid currency"));
             }
 
-            user.ValidateMoneyWithdrawal(amount);
+            if(amount <= 0)
+            {
+                return Result.Failure<MoneyWithdrawal>(new Error(3, "Amount must be bigger then 0"));
+            }
+
+            if (!user.ValidateMoneyWithdrawal(amount))
+            {
+                return Result.Failure<MoneyWithdrawal>(new Error(4, "Not enough funds on users balance"));
+            }
 
             user.WithdrawMoneyFromBalance(amount);
 
